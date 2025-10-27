@@ -3,6 +3,8 @@ import { StyleSheet } from 'react-native';
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
 
+const dataURL = 'https://nyc.cloud.appwrite.io/v1/storage/buckets/68f8ed0e001b9c51e7ce/files/68fd148a002df982b65d/view?project=68f8eca00020d0b00702&mode=admin'
+
 export default function TabOneScreen() {
   return (
     <View style={styles.container}>

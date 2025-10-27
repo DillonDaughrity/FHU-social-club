@@ -1,16 +1,26 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import { useContext } from 'react';
+import { Button, StyleSheet } from 'react-native';
 
 import { ExternalLink } from './ExternalLink';
 import { MonoText } from './StyledText';
 import { Text, View } from './Themed';
 
 import Colors from '@/constants/Colors';
+import { ThemeContext } from '@/hooks/ThemeContext';
 
 export default function EditScreenInfo({ path }: { path: string }) {
+
+  const {theme, toggleTheme} = useContext( ThemeContext )
+
   return (
     <View>
       <View style={styles.getStartedContainer}>
+
+
+        <Button onPress={toggleTheme} title='Toggle Mode (Light/Dark)'></Button>
+
+        <Text>{theme}</Text>
+
         <Text
           style={styles.getStartedText}
           lightColor="rgba(0,0,0,0.8)"
