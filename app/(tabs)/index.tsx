@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { FlatList, Image, StyleSheet } from 'react-native';
+import { FlatList, Image, StyleSheet, TextInput } from 'react-native';
 
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
@@ -70,12 +70,20 @@ export default function TabOneScreen() {
 
   const renderItem = ( {item}: {item: Student }) => {
     return (
-      <View>
-        <Image source={{uri: item.imageURL}} style={{width: 50, height: 50}}/>
+      <View style={styles.studentContainer}>
+        <View style={styles.infoContainer}>
+          <Image source={{uri: item.imageURL}} style={styles.smallImage}/>
 
-        <Text>{item.firstName} {item.lastName}</Text>
+          <View style={styles.infoText}>
+            <Text>{item.firstName} {item.lastName}</Text>
+            <Text>{item.officer}</Text>
+          </View>
+        </View>
 
-        <Text>{item.classification} {item.relationshipStatus}</Text>
+        <View style={styles.extraInfo}>
+          <Text>{item.classification}</Text>
+          <Text>{item.relationshipStatus}</Text>
+        </View>
       </View>
     )
   }
@@ -83,8 +91,16 @@ export default function TabOneScreen() {
   return (
     
     <View style={styles.container}>
-      <Text>Club Directory</Text>
-      <View style={styles.separator}></View>
+      <Text style={styles.title}>Club Directory</Text>
+      <TextInput
+        placeholder="Search by first or last name..."
+        value={query}
+        onChangeText={setQuery}
+        autoCapitalize="none"
+        autoCorrect={false}
+        style={styles.search}
+        clearButtonMode="while-editing"
+      />
       <FlatList
           data={filtered}
           renderItem={renderItem}
@@ -104,18 +120,58 @@ export default function TabOneScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    
   },
   title: {
-    fontSize: 20,
+    fontSize: 40,
+    marginTop: 10,
+    marginBottom: 10,
+    textAlign: 'center',
     fontWeight: 'bold',
+  },
+  search: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginHorizontal: 10,
+    marginBottom: 20,
+    fontSize: 16,
+  },
+  studentContainer: {
+    marginLeft: 20,
+    marginRight: 60,
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  smallImage: {
+    borderRadius: 10,
+    height: 75,
+    width: 75
+  },
+  bigImage: {
+    height: 150,
+    width: 150
+  },
+  infoContainer: {
+    display: 'flex',
+    flexDirection: 'row'
+  },
+  infoText: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    marginLeft: 10
+  },
+  extraInfo: {
+    display: 'flex',
+    justifyContent: 'space-around'
   },
   separator: {
     marginVertical: 30,
     height: 1,
-    width: '80%',
-    backgroundColor: "#04ff00ff"
+    width: '100%',
+    backgroundColor: "#000000"
   },
 });
