@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { FlatList, Image, Modal, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { FlatList, Image, Linking, Modal, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
 import { Text, View } from '@/components/Themed';
 
@@ -148,8 +148,20 @@ export default function TabOneScreen() {
             <Text style={{fontSize: 20}}>{<Ionicons name='person-outline' size={20}/>} {selectedStudent?.firstName} {selectedStudent?.lastName}</Text>
             {selectedStudent?.officer != null && <Text style={{fontSize: 20}}>{<Ionicons name='shield-checkmark-outline' size={20} />} {selectedStudent.officer}</Text>}
             <Text style={{fontSize: 20}}>{<Ionicons name='school-outline' size={20}/>} {selectedStudent?.classification}</Text>
-            {selectedStudent?.showEmail && <Text style={{fontSize: 20}}>{<Ionicons name='mail-outline' size={20}/>} {selectedStudent.email}</Text>}
-            {selectedStudent?.showPhone && <Text style={{fontSize: 20}}>{<Ionicons name='call-outline' size={20}/>} {selectedStudent.phone}</Text>}
+            {selectedStudent?.showEmail && 
+            <View style={{display: 'flex', flexDirection: 'row', alignItems:'center'}}>
+              {<Ionicons name='mail-outline' size={20}/>} 
+              {<TouchableOpacity onPress={() => Linking.openURL(`mailto:${selectedStudent.email}`)}>
+                <Text style={{fontSize: 20, marginLeft: 5, textDecorationLine: 'underline', textDecorationColor: '#1500ff'}}>{selectedStudent.email}</Text>
+              </TouchableOpacity>}
+            </View>}
+            {selectedStudent?.showPhone && 
+            <View style={{display: 'flex', flexDirection: 'row', alignItems:'center'}}>
+              {<Ionicons name='call-outline' size={20}/>} 
+              {<TouchableOpacity onPress={() => Linking.openURL(`tel:${selectedStudent.phone}`)}>
+                <Text style={{fontSize: 20, marginLeft: 5, textDecorationLine: 'underline', textDecorationColor: '#1500ff'}}>{selectedStudent.phone}</Text>
+              </TouchableOpacity>}
+            </View>}
             <Text style={{fontSize: 20}}>{<Ionicons name='heart-outline' size={20}/>} {selectedStudent?.relationshipStatus}</Text>
           </View>
         </Modal>
