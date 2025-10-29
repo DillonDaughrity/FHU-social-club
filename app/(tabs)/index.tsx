@@ -93,13 +93,13 @@ export default function TabOneScreen() {
             <View style={styles.infoText}>
               <Text>{item.firstName} {item.lastName}</Text>
 
-              <Text>{item.classification}</Text>
+              {item.officer != null && <Text>{item.officer}</Text>}
+              {item.officer == null && <Text></Text>}
             </View>
           </View>
 
           <View style={styles.extraInfo}>
-            {item.officer != null && <Text>{item.officer}</Text>}
-            {item.officer == null && <Text></Text>}
+            <Text>{item.classification}</Text>
 
             <Text>{item.relationshipStatus}</Text>
           </View>
