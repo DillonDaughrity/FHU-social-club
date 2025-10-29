@@ -1,17 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
-import { FlatList, Image, StyleSheet, TextInput } from 'react-native';
+import { FlatList, Image, Modal, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 
-import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
 
-const dataURL = 'https://nyc.cloud.appwrite.io/v1/storage/buckets/68f8ed0e001b9c51e7ce/files/68fd148a002df982b65d/view?project=68f8eca00020d0b00702&mode=admin'
+import { Ionicons } from '@expo/vector-icons';
+
+const dataURL = 'https://nyc.cloud.appwrite.io/v1/storage/buckets/68f8ed0e001b9c51e7ce/files/69017e74002823cca3e9/view?project=68f8eca00020d0b00702&mode=admin'
 
 type Student = {
   id: number,
   firstName: string,
   lastName: string,
-  relationshipStatus: "single" | "taken" | "complicated",
-  classification: "freshman" | "sophomore" | "junior" | "senior",
+  relationshipStatus: "Single" | "Taken" | "Complicated",
+  classification: "Freshman" | "Sophomore" | "Junior" | "Senior",
   email: string,
   phone: string,
   showEmail: boolean,
@@ -24,6 +25,20 @@ export default function TabOneScreen() {
   const [students, setStudents] = useState<Student[]>([])
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [query, setQuery] = useState("")
+  const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null)
+  const [profileVisibility, setProfileVisibility] = useState(false)
+  
+  const selectedStudent = students.find(student => student.id === selectedStudentId)
+
+  const profileOn = (id: number) => {
+    setSelectedStudentId(id)
+    setProfileVisibility(true)
+  }
+
+  const profileOff = () => {
+    setSelectedStudentId(null)
+    setProfileVisibility(false)
+  }
 
   useEffect(() => {
     let isMounted = true
@@ -70,21 +85,28 @@ export default function TabOneScreen() {
 
   const renderItem = ( {item}: {item: Student }) => {
     return (
-      <View style={styles.studentContainer}>
-        <View style={styles.infoContainer}>
-          <Image source={{uri: item.imageURL}} style={styles.smallImage}/>
+      <TouchableOpacity onPress={() => profileOn(item.id)}>
+        <View style={styles.studentContainer}>
+          <View style={styles.infoContainer}>
+            <Image source={{uri: item.imageURL}} style={styles.smallImage}/>
 
-          <View style={styles.infoText}>
-            <Text>{item.firstName} {item.lastName}</Text>
-            <Text>{item.officer}</Text>
+            <View style={styles.infoText}>
+              <Text>{item.firstName} {item.lastName}</Text>
+
+              <Text>{item.classification}</Text>
+            </View>
           </View>
-        </View>
 
-        <View style={styles.extraInfo}>
-          <Text>{item.classification}</Text>
-          <Text>{item.relationshipStatus}</Text>
+          <View style={styles.extraInfo}>
+            {item.officer != null && <Text>{item.officer}</Text>}
+            {item.officer == null && <Text></Text>}
+
+            <Text>{item.relationshipStatus}</Text>
+          </View>
+            
+          <Ionicons name="chevron-forward-outline" size={30} color={'#000000aa'} style={{alignSelf: 'center'}}/>
         </View>
-      </View>
+      </TouchableOpacity>
     )
   }
 
@@ -102,25 +124,42 @@ export default function TabOneScreen() {
         clearButtonMode="while-editing"
       />
       <FlatList
-          data={filtered}
+          data={filteredWithMemoization}
           renderItem={renderItem}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           ListEmptyComponent={
             <View>
-              <Text>
+              <Text style={{textAlign: 'center', marginHorizontal: 10}}>
                 No students match “{query}”.
               </Text>
             </View>
           }
         />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
+
+        <Modal visible={profileVisibility}>
+          <View>
+            <TouchableOpacity onPress={profileOff}>
+              <Text style={{fontSize: 30, opacity: 50, color: '#000000aa'}}><Ionicons name="chevron-back-outline" size={30}/> Back</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.studentProfile}>
+            <Image source={{uri: selectedStudent?.imageURL}} style={[styles.bigImage, {alignSelf: 'center'}]}/>
+            <Text style={{fontSize: 20}}>{<Ionicons name='person-outline' size={20}/>} {selectedStudent?.firstName} {selectedStudent?.lastName}</Text>
+            {selectedStudent?.officer != null && <Text style={{fontSize: 20}}>{<Ionicons name='shield-checkmark-outline' size={20} />} {selectedStudent.officer}</Text>}
+            <Text style={{fontSize: 20}}>{<Ionicons name='school-outline' size={20}/>} {selectedStudent?.classification}</Text>
+            {selectedStudent?.showEmail && <Text style={{fontSize: 20}}>{<Ionicons name='mail-outline' size={20}/>} {selectedStudent.email}</Text>}
+            {selectedStudent?.showPhone && <Text style={{fontSize: 20}}>{<Ionicons name='call-outline' size={20}/>} {selectedStudent.phone}</Text>}
+            <Text style={{fontSize: 20}}>{<Ionicons name='heart-outline' size={20}/>} {selectedStudent?.relationshipStatus}</Text>
+          </View>
+        </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    
+    paddingBottom: 30
   },
   title: {
     fontSize: 40,
@@ -141,8 +180,8 @@ const styles = StyleSheet.create({
   },
   studentContainer: {
     marginLeft: 20,
-    marginRight: 60,
-    flex: 1,
+    marginRight: 10,
+    display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between'
   },
@@ -152,8 +191,10 @@ const styles = StyleSheet.create({
     width: 75
   },
   bigImage: {
-    height: 150,
-    width: 150
+    borderRadius: 10,
+    marginVertical: 20,
+    height: 250,
+    width: 250
   },
   infoContainer: {
     display: 'flex',
@@ -168,10 +209,14 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'space-around'
   },
+  studentProfile: {
+    display: 'flex',
+    marginHorizontal: 20,
+  },
   separator: {
     marginVertical: 30,
     height: 1,
     width: '100%',
-    backgroundColor: "#000000"
+    backgroundColor: "#000"
   },
 });
