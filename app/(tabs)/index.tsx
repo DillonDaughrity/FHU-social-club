@@ -3,6 +3,7 @@ import { FlatList, Image, Linking, Modal, StyleSheet, TextInput, TouchableOpacit
 
 import { Text, View } from '@/components/Themed';
 
+import { useAuth } from '@/hooks/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 
 const dataURL = 'https://nyc.cloud.appwrite.io/v1/storage/buckets/68f8ed0e001b9c51e7ce/files/69017e74002823cca3e9/view?project=68f8eca00020d0b00702&mode=admin'
@@ -22,6 +23,8 @@ type Student = {
 }
 
 export default function TabOneScreen() {
+  const {user, register, login, loading} = useAuth()
+
   const [students, setStudents] = useState<Student[]>([])
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [query, setQuery] = useState("")
@@ -114,6 +117,9 @@ export default function TabOneScreen() {
     
     <View style={styles.container}>
       <Text style={styles.title}>Club Directory</Text>
+      <Text> {user?.name} </Text>
+      <Text> {user?.email} </Text>
+      <Text> {user?.password} </Text>
       <TextInput
         placeholder="Search by first or last name..."
         value={query}
