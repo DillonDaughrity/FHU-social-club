@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
 
-import { getEvents } from '@/lib/events';
+//import { getEvents } from '@/lib/events';
 
 const dataURL = 'https://nyc.cloud.appwrite.io/v1/storage/buckets/68f8ed0e001b9c51e7ce/files/690cefab00299b58429a/view?project=68f8eca00020d0b00702&mode=admin'
 
@@ -23,8 +23,8 @@ export default function TabTwoScreen() {
 
   useEffect(() => {
     const loadEvents = async () => {
-      const data = await getEvents()
-      setEvents(data)
+      // const data = await getEvents()
+      // setEvents(data)
       setLoading(false)
     }
     loadEvents()
