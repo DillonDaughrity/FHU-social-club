@@ -11,7 +11,11 @@ export default function TabTwoScreen() {
   type Event = {
     $id: string,
     eventName: string,
-    eventDate: string
+    description: string,
+    eventDate: string,
+    time: string,
+    club: string,
+    location: string
   }
 
   const [events, setEvents] = useState<Event[]>([])
@@ -45,9 +49,11 @@ export default function TabTwoScreen() {
         renderItem={({item}) => (
           <View>
             <Text>{item.eventName}</Text>
+            <Text>{item.description}</Text>
             <Text>{item.eventDate}</Text>
           </View>
         )}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
     </View>
   );
@@ -67,5 +73,6 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     height: 1,
     width: '80%',
+    backgroundColor: '#333',
   },
 });

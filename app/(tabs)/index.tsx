@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { FlatList, Image, Linking, Modal, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-
-import { Text, View } from '@/components/Themed';
+import { FlatList, Image, Linking, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { useAuth } from '@/hooks/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
@@ -126,7 +124,7 @@ export default function TabOneScreen() {
         onChangeText={setQuery}
         autoCapitalize="none"
         autoCorrect={false}
-        style={styles.search}
+        style={[styles.search, {color: '#333'}]}
         clearButtonMode="while-editing"
       />
       <FlatList
@@ -143,7 +141,7 @@ export default function TabOneScreen() {
         />
 
         <Modal visible={profileVisibility}>
-          <View>
+          <View style={{marginTop: 40}}>
             <TouchableOpacity onPress={profileOff}>
               <Text style={{fontSize: 30, opacity: 50, color: '#000000aa'}}><Ionicons name="chevron-back-outline" size={30}/> Back</Text>
             </TouchableOpacity>
@@ -177,14 +175,16 @@ export default function TabOneScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 30
+    paddingBottom: 30,
+    backgroundColor: "#0a0a0a",
+    color: "#aaa",
   },
   title: {
     fontSize: 40,
     marginTop: 10,
-    marginBottom: 10,
     textAlign: 'center',
     fontWeight: 'bold',
+    color: '#ffffffff'
   },
   search: {
     borderWidth: 1,

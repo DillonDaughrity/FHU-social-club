@@ -15,7 +15,11 @@ export async function getEvents() {
         const events = res.documents.map( (doc) => ({
             $id: doc.$id,
             eventName: doc.Title,
-            eventDate: doc.Date
+            description: doc.Description,
+            eventDate: doc.Date,
+            time: doc.Time,
+            club: doc.Club,
+            location: doc.Location
         }))
 
         return events
