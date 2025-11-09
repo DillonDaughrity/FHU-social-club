@@ -149,21 +149,17 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 96,
     paddingHorizontal: 24,
-    backgroundColor: "#0a0a0a",
   },
   title: {
     fontSize: 28,
     fontWeight: "600",
-    color: "white",
     marginBottom: 32,
   },
   label: {
-    color: "#aaa",
     fontSize: 14,
     marginBottom: 6,
   },
   value: {
-    color: "white",
     fontSize: 16,
     fontWeight: "500",
     marginBottom: 16,
@@ -172,8 +168,6 @@ const styles = StyleSheet.create({
     width: "100%",
     borderColor: "#333",
     borderWidth: 1,
-    backgroundColor: "#1a1a1a",
-    color: "white",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -182,7 +176,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: "100%",
-    backgroundColor: "white",
+    backgroundColor: "#999",
     borderRadius: 8,
     alignItems: "center",
     paddingVertical: 14,
@@ -198,7 +192,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   linkText: {
-    color: "#5ea0ff",
+    color: '#4000ffff',
     textAlign: "center",
     fontSize: 14,
     fontWeight: "500",

@@ -4,8 +4,9 @@ import "react-native-url-polyfill/auto"
 const APPWRITE_ENDPOINT = "https://nyc.cloud.appwrite.io/v1"
 const APPWRITE_PROJECT_ID = "68f8eca00020d0b00702"
 const APPWRITE_PLATFORM_NAME = "edu.fhu.fhu-social-club"
-const DATABASE_ID = 'social-club-db'
-const MEMBERS_TABLES_ID = 'members'
+const DATABASE_ID = '6908d1cd0021a16d1690'
+const MEMBERS_TABLE_ID = 'members'
+const EVENTS_TABLE_ID = 'events'
 
 export interface MemberRow extends Models.Row {
     firstName: string,
@@ -16,7 +17,16 @@ export interface MemberRow extends Models.Row {
     email: string,
 }
 
-export function createAppWriteService(config) {
+export interface EventRow extends Models.Row {
+    title: string,
+    description: string,
+    date: string,
+    time: string,
+    club: string,
+    location: string
+}
+
+export function createAppWriteService() {
     const client = new Client()
         .setEndpoint(APPWRITE_ENDPOINT)
         .setProject(APPWRITE_PROJECT_ID)
@@ -60,11 +70,22 @@ export function createAppWriteService(config) {
 
         const response = await tables.listRows<MemberRow>({
             databaseId: DATABASE_ID,
-            tableId: MEMBERS_TABLES_ID,
+            tableId: MEMBERS_TABLE_ID,
             queries: [Query.equal('userID', userID), Query.limit(1)]
         })
 
         return response.rows[0] ?? null
+    }
+
+    const getEvents = async (): Promise<EventRow[]> => {
+
+        const response = await tables.listRows<EventRow>({
+            databaseId: DATABASE_ID,
+            tableId: EVENTS_TABLE_ID,
+            queries: [Query.orderAsc('date')]
+        })
+
+        return response.rows
     }
 
     return {
@@ -77,7 +98,8 @@ export function createAppWriteService(config) {
         loginWithEmail,
         logoutCurrentDevice,
 
-        getMemberByUserId
+        getMemberByUserId,
+        getEvents
     }
 }
 // export const databases = new Databases(client)
