@@ -1,5 +1,5 @@
 import { createAppWriteService, MemberRow } from '@/lib/appwrite'
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Models } from 'react-native-appwrite'
 
 type AuthContextType = {
@@ -15,7 +15,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider( {children}: {children: React.ReactNode}) {
 
-    const appwriteService = createAppWriteService(null)
+    const appwriteService = useMemo(() => createAppWriteService(), [])
 
     const [user, setUser] = useState<Models.User<Models.Preferences> | null>(null)
     const [member, setMember] = useState<MemberRow | null>(null)

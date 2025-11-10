@@ -78,5 +78,6 @@ const styles = StyleSheet.create({
     height: 1,
     width: '80%',
     backgroundColor: '#333',
+    alignSelf: 'center'
   },
 });
