@@ -1,14 +1,16 @@
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { FlatList, Image, Linking, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { useAuth } from '@/hooks/AuthContext';
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { createAppWriteService } from '@/lib/appwrite';
 
-const dataURL = 'https://nyc.cloud.appwrite.io/v1/storage/buckets/68f8ed0e001b9c51e7ce/files/69017e74002823cca3e9/view?project=68f8eca00020d0b00702&mode=admin'
+const dataURL = 'https://nyc.cloud.appwrite.io/v1/storage/buckets/68f8ed0e001b9c51e7ce/files/691259c400160b95dd4f/view?project=68f8eca00020d0b00702&mode=admin'
 
 type Student = {
   id: number,
+  userID?: string,
   firstName: string,
   lastName: string,
   relationshipStatus: "Single" | "Taken" | "Complicated",
@@ -18,10 +20,13 @@ type Student = {
   showEmail: boolean,
   showPhone: boolean,
   imageURL: string,
-  officer: string
+  officer: string,
+  club: 'Phi Kappa Alpha' | 'Omega Chi' | 'Chi Beta Chi' | 'Sigma Rho' | 'Xi Chi Delta'
 }
 
 export default function TabOneScreen() {
+  const appwriteService = useMemo(() => createAppWriteService(), [])
+
   const {user, register, login, loading} = useAuth()
 
   const [students, setStudents] = useState<Student[]>([])
@@ -43,28 +48,14 @@ export default function TabOneScreen() {
   }
 
   useEffect(() => {
-    let isMounted = true
-
-    async function load() {
-      try {
-        setErrorMsg(null)
-
-        const res = await fetch(dataURL, { method: "GET" })
-        if (!res.ok) {throw new Error(`HTTP ${res.status}`)}
-        const json = (await res.json()) as Student[]
-
-        if (isMounted) {setStudents(json)}
+    if(user) {
+      const loadMembers = async () => {
+        const data = await appwriteService.getMembersByClub((await appwriteService.getMemberByUserId(user.$id)).club)
+        setStudents(data)
       }
-
-      catch (e: any) {
-        if (isMounted) {
-          setErrorMsg(e?.message ?? "unknown error")
-        }
-      }
+      
+      loadMembers()
     }
-
-    load()
-    return () => {isMounted = false}    
   }, [])
 
   const q = query.trimEnd().toLowerCase()
@@ -93,7 +84,7 @@ export default function TabOneScreen() {
             <Image source={{uri: item.imageURL}} style={styles.smallImage}/>
 
             <View style={styles.infoText}>
-              <Text>{item.firstName} {item.lastName}</Text>
+              <Text>{item.firstName} {item.lastName} </Text>
 
               {item.officer != null && <Text>{item.officer}</Text>}
               {item.officer == null && <Text></Text>}
@@ -115,7 +106,7 @@ export default function TabOneScreen() {
   return (
     
     <View style={styles.container}>
-      <Text style={styles.title}>Club Directory</Text>
+      <Text style={styles.title}>Directory</Text>
 
       {!user && <View style={{marginHorizontal: 20}}>
         <Text style={{fontSize: 18, textAlign: 'center', marginVertical: 15}}>
@@ -185,11 +176,11 @@ export default function TabOneScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 75,
+    
   },
   title: {
-    fontSize: 40,
-    marginTop: 10,
+    fontSize: 30,
+    marginVertical: 20,
     textAlign: 'center',
     fontWeight: 'bold',
   },

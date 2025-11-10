@@ -9,12 +9,19 @@ const MEMBERS_TABLE_ID = 'members'
 const EVENTS_TABLE_ID = 'events'
 
 export interface MemberRow extends Models.Row {
+    id: number,
     firstName: string,
     lastName: string,
-    userID: string,
-    club?: string,
-    phoneNumber: string,
+    relationshipStatus: "Single" | "Taken" | "Complicated",
+    classification: "Freshman" | "Sophomore" | "Junior" | "Senior",
+    userID?: string,
+    club: 'Phi Kappa Alpha' | 'Omega Chi' | 'Chi Beta Chi' | 'Sigma Rho' | 'Xi Chi Delta',
+    phone: string,
     email: string,
+    showEmail: boolean,
+    showPhone: boolean
+    imageURL: string,
+    officer: string,
 }
 
 export interface EventRow extends Models.Row {
@@ -77,6 +84,17 @@ export function createAppWriteService() {
         return response.rows[0] ?? null
     }
 
+    const getMembersByClub = async( club: string ): Promise<MemberRow[]> => {
+
+        const response = await tables.listRows<MemberRow>({
+            databaseId: DATABASE_ID,
+            tableId: MEMBERS_TABLE_ID,
+            queries: [Query.equal('club', club)]
+        })
+
+        return response.rows
+    }
+
     const getEvents = async (): Promise<EventRow[]> => {
 
         const response = await tables.listRows<EventRow>({
@@ -99,6 +117,7 @@ export function createAppWriteService() {
         logoutCurrentDevice,
 
         getMemberByUserId,
+        getMembersByClub,
         getEvents
     }
 }

@@ -3,8 +3,6 @@ import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-nativ
 
 import { createAppWriteService } from '@/lib/appwrite';
 
-const dataURL = 'https://nyc.cloud.appwrite.io/v1/storage/buckets/68f8ed0e001b9c51e7ce/files/690cefab00299b58429a/view?project=68f8eca00020d0b00702&mode=admin'
-
 type Event = {
     $id: string,
     title: string,
@@ -43,24 +41,27 @@ export default function TabTwoScreen() {
     return(
       <View style={styles.eventContainer}>
         <View style={styles.eventInfo}>
-          <Text>{item.title}</Text>
-          <Text>{item.club}</Text>
+          <Text style={{fontSize: 20, marginBottom: 5}}>{item.title}</Text>
+          <Text style={{fontSize: 15}}>{item.club}</Text>
         </View>
-        <Text>{item.description}</Text>
-        <Text>{item.date}     {item.time}</Text>
+        <Text style={styles.eventDescription}>{item.description}</Text>
+        <View style={styles.eventTime}>
+          <Text>{item.date}</Text>
+          <Text>{item.time}</Text>
+        </View>
       </View>
     )
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
+      <Text style={styles.title}>Events</Text>
       <View style={styles.separator} />
       <FlatList 
         data={events}
         keyExtractor={(item) => item.$id}
         renderItem={renderItem}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        ItemSeparatorComponent={() => <View style={styles.separator}/>}
       />
     </View>
   );
@@ -71,9 +72,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    marginVertical: 20
   },
   title: {
-    fontSize: 20,
+    fontSize: 30,
+    marginVertical: 10,
+    textAlign: 'center',
     fontWeight: 'bold',
   },
   separator: {
@@ -88,7 +92,15 @@ const styles = StyleSheet.create({
   },
   eventInfo: {
     display: 'flex',
+    alignItems: 'center',
+  },
+  eventDescription: {
+    marginVertical: 10,
+    textAlign: 'center'
+  },
+  eventTime: {
+    display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-around'
   }
 });
