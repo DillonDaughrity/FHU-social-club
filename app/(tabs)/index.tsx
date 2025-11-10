@@ -5,10 +5,7 @@ import { createAppWriteService } from '@/lib/appwrite';
 
 const dataURL = 'https://nyc.cloud.appwrite.io/v1/storage/buckets/68f8ed0e001b9c51e7ce/files/690cefab00299b58429a/view?project=68f8eca00020d0b00702&mode=admin'
 
-const appwriteService = useMemo(() => createAppWriteService(), [])
-
-export default function TabTwoScreen() {
-  type Event = {
+type Event = {
     $id: string,
     title: string,
     description: string,
@@ -17,6 +14,9 @@ export default function TabTwoScreen() {
     club: string,
     location: string
   }
+
+export default function TabTwoScreen() {
+  const appwriteService = useMemo(() => createAppWriteService(), [])
 
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
@@ -41,10 +41,13 @@ export default function TabTwoScreen() {
 
   const renderItem = ( {item}: {item: Event}) => {
     return(
-      <View>
-        <Text>{item.title}</Text>
+      <View style={styles.eventContainer}>
+        <View style={styles.eventInfo}>
+          <Text>{item.title}</Text>
+          <Text>{item.club}</Text>
+        </View>
         <Text>{item.description}</Text>
-        <Text>{item.date}</Text>
+        <Text>{item.date}     {item.time}</Text>
       </View>
     )
   }
@@ -80,4 +83,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#333',
     alignSelf: 'center'
   },
+  eventContainer: {
+    marginHorizontal: 30
+  },
+  eventInfo: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  }
 });
