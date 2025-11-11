@@ -149,6 +149,7 @@ export default function TabOneScreen() {
                   </Text>
                 </View>
               }
+              contentContainerStyle={{paddingBottom: 150, flexGrow: 1}}
             />
 
             <Modal visible={profileVisibility}>

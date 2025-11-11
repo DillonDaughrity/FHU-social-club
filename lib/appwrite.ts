@@ -89,7 +89,7 @@ export function createAppWriteService() {
         const response = await tables.listRows<MemberRow>({
             databaseId: DATABASE_ID,
             tableId: MEMBERS_TABLE_ID,
-            queries: [Query.equal('club', club)]
+            queries: [Query.equal('club', club), Query.orderAsc('lastName')]
         })
 
         return response.rows
