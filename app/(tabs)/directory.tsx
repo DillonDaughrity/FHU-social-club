@@ -1,10 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FlatList, Image, Linking, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { useAuth } from '@/hooks/AuthContext';
 import { createAppWriteService } from '@/lib/appwrite';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const dataURL = 'https://nyc.cloud.appwrite.io/v1/storage/buckets/68f8ed0e001b9c51e7ce/files/691259c400160b95dd4f/view?project=68f8eca00020d0b00702&mode=admin'
 
@@ -48,17 +49,24 @@ export default function TabOneScreen() {
     setProfileVisibility(false)
   }
 
-  useMemo(() => {
-    if(user) {
-      const loadMembers = async () => {
-        const data = await appwriteService.getMembersByClub((await appwriteService.getMemberByUserId(user.$id)).club)
+  useEffect(() => {
+  const loadMembers = async () => {
+    try {
+      if (user) {
+        const member = await appwriteService.getMemberByUserId(user.$id)
+        const data = await appwriteService.getMembersByClub(member.club)
         setStudents(data)
-        setCurrentClub((await appwriteService.getMemberByUserId(user.$id)).club)
+        setCurrentClub(member.club)
       }
-      
-      loadMembers()
+    } catch (error) {
+      console.error("Error loading members:", error)
+      setErrorMsg("Failed to load directory.")
     }
-  }, [])
+  }
+
+  loadMembers()
+}, [user])
+
 
   const q = query.trimEnd().toLowerCase()
   const filtered = students.filter((person) => {
@@ -106,79 +114,81 @@ export default function TabOneScreen() {
   }
 
   return (
-    
-    <View style={styles.container}>
-      <Text style={styles.title}>{currentClub} Directory</Text>
+    <SafeAreaView style={{flex: 1}}>
+      <View style={styles.container}>
+        <Text style={styles.title}>{currentClub} Directory</Text>
 
-      {!user && <View style={{marginHorizontal: 20}}>
-        <Text style={{fontSize: 18, textAlign: 'center', marginVertical: 15}}>
-          You must be logged in to see this page.
-        </Text>
-        <TouchableOpacity onPress={() => router.push('/(tabs)/auth')}>
-          <Text style={styles.link}>Need to login? Click here</Text>
-        </TouchableOpacity>
-      </View>}
-
-      {user && <View>
-        <TextInput
-          placeholder="Search by first or last name..."
-          value={query}
-          onChangeText={setQuery}
-          autoCapitalize="none"
-          autoCorrect={false}
-          style={[styles.search, {color: '#333'}]}
-          clearButtonMode="while-editing"
-        />
-        <FlatList
-            data={filteredWithMemoization}
-            renderItem={renderItem}
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
-            ListEmptyComponent={
-              <View>
-                <Text style={{textAlign: 'center', marginHorizontal: 10}}>
-                  No students match “{query}”.
-                </Text>
-              </View>
-            }
-          />
-
-          <Modal visible={profileVisibility}>
-            <View style={{marginTop: 40}}>
-              <TouchableOpacity onPress={profileOff}>
-                <Text style={{fontSize: 30, opacity: 50, color: '#000000aa'}}><Ionicons name="chevron-back-outline" size={30}/> Back</Text>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.studentProfile}>
-              <Image source={{uri: selectedStudent?.imageURL}} style={[styles.bigImage, {alignSelf: 'center'}]}/>
-              <Text style={{fontSize: 20}}>{<Ionicons name='person-outline' size={20}/>} {selectedStudent?.firstName} {selectedStudent?.lastName}</Text>
-              {selectedStudent?.officer != null && <Text style={{fontSize: 20}}>{<Ionicons name='shield-checkmark-outline' size={20} />} {selectedStudent.officer}</Text>}
-              <Text style={{fontSize: 20}}>{<Ionicons name='school-outline' size={20}/>} {selectedStudent?.classification}</Text>
-              {selectedStudent?.showEmail && 
-              <View style={{display: 'flex', flexDirection: 'row', alignItems:'center'}}>
-                {<Ionicons name='mail-outline' size={20}/>} 
-                {<TouchableOpacity onPress={() => Linking.openURL(`mailto:${selectedStudent.email}`)}>
-                  <Text style={{fontSize: 20, marginLeft: 5, textDecorationLine: 'underline', textDecorationColor: '#1500ff'}}>{selectedStudent.email}</Text>
-                </TouchableOpacity>}
-              </View>}
-              {selectedStudent?.showPhone && 
-              <View style={{display: 'flex', flexDirection: 'row', alignItems:'center'}}>
-                {<Ionicons name='call-outline' size={20}/>} 
-                {<TouchableOpacity onPress={() => Linking.openURL(`tel:${selectedStudent.phone}`)}>
-                  <Text style={{fontSize: 20, marginLeft: 5, textDecorationLine: 'underline', textDecorationColor: '#1500ff'}}>{selectedStudent.phone}</Text>
-                </TouchableOpacity>}
-              </View>}
-              <Text style={{fontSize: 20}}>{<Ionicons name='heart-outline' size={20}/>} {selectedStudent?.relationshipStatus}</Text>
-            </View>
-          </Modal>
+        {!user && <View style={{marginHorizontal: 20}}>
+          <Text style={{fontSize: 18, textAlign: 'center', marginVertical: 15}}>
+            You must be logged in to see this page.
+          </Text>
+          <TouchableOpacity onPress={() => router.push('/(tabs)/auth')}>
+            <Text style={styles.link}>Need to login? Click here</Text>
+          </TouchableOpacity>
         </View>}
-    </View>
+
+        {user && <View>
+          <TextInput
+            placeholder="Search by first or last name..."
+            value={query}
+            onChangeText={setQuery}
+            autoCapitalize="none"
+            autoCorrect={false}
+            style={[styles.search, {color: '#333'}]}
+            clearButtonMode="while-editing"
+          />
+          <FlatList
+              data={filteredWithMemoization}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id.toString()}
+              ItemSeparatorComponent={() => <View style={styles.separator} />}
+              ListEmptyComponent={
+                <View>
+                  <Text style={{textAlign: 'center', marginHorizontal: 10}}>
+                    No students match “{query}”.
+                  </Text>
+                </View>
+              }
+            />
+
+            <Modal visible={profileVisibility}>
+              <View style={{marginTop: 40}}>
+                <TouchableOpacity onPress={profileOff}>
+                  <Text style={{fontSize: 30, opacity: 50, color: '#000000aa'}}><Ionicons name="chevron-back-outline" size={30}/> Back</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.studentProfile}>
+                <Image source={{uri: selectedStudent?.imageURL}} style={[styles.bigImage, {alignSelf: 'center'}]}/>
+                <Text style={{fontSize: 20}}>{<Ionicons name='person-outline' size={20}/>} {selectedStudent?.firstName} {selectedStudent?.lastName}</Text>
+                {selectedStudent?.officer != null && <Text style={{fontSize: 20}}>{<Ionicons name='shield-checkmark-outline' size={20} />} {selectedStudent.officer}</Text>}
+                <Text style={{fontSize: 20}}>{<Ionicons name='school-outline' size={20}/>} {selectedStudent?.classification}</Text>
+                {selectedStudent?.showEmail && 
+                <View style={{display: 'flex', flexDirection: 'row', alignItems:'center'}}>
+                  {<Ionicons name='mail-outline' size={20}/>} 
+                  {<TouchableOpacity onPress={() => Linking.openURL(`mailto:${selectedStudent.email}`)}>
+                    <Text style={{fontSize: 20, marginLeft: 5, textDecorationLine: 'underline', textDecorationColor: '#1500ff'}}>{selectedStudent.email}</Text>
+                  </TouchableOpacity>}
+                </View>}
+                {selectedStudent?.showPhone && 
+                <View style={{display: 'flex', flexDirection: 'row', alignItems:'center'}}>
+                  {<Ionicons name='call-outline' size={20}/>} 
+                  {<TouchableOpacity onPress={() => Linking.openURL(`tel:${selectedStudent.phone}`)}>
+                    <Text style={{fontSize: 20, marginLeft: 5, textDecorationLine: 'underline', textDecorationColor: '#1500ff'}}>{selectedStudent.phone}</Text>
+                  </TouchableOpacity>}
+                </View>}
+                <Text style={{fontSize: 20}}>{<Ionicons name='heart-outline' size={20}/>} {selectedStudent?.relationshipStatus}</Text>
+              </View>
+            </Modal>
+        </View>}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    
+    flex: 1
   },
   title: {
     fontSize: 30,
