@@ -15,6 +15,8 @@ export default function AuthScreen() {
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [name, setName] = useState(""); // only used in register
+  const [club, setClub] = useState('') // only used in register
+  const [phone, setPhone] = useState('') // only used in register
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,7 +86,27 @@ export default function AuthScreen() {
             onChangeText={setName}
             placeholder="Jane Doe"
           />
+
+          <Text style={styles.label}>Club</Text>
+          <TextInput
+            style={styles.input}
+            autoCapitalize='words'
+            value={club}
+            onChangeText={setClub}
+            placeholder="Chi Beta Chi/Xi Chi Delta/Omega Chi/etc."
+          />
+
+          <Text style={styles.label}>Phone</Text>
+          <TextInput
+            style={styles.input}
+            autoCapitalize="words"
+            value={phone}
+            onChangeText={setPhone}
+            placeholder="123-456-7890"
+          />
         </>
+
+        
       )}
 
       <Text style={styles.label}>Email</Text>

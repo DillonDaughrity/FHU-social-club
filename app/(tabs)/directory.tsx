@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FlatList, Image, Linking, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { useAuth } from '@/hooks/AuthContext';
@@ -34,6 +34,7 @@ export default function TabOneScreen() {
   const [query, setQuery] = useState("")
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null)
   const [profileVisibility, setProfileVisibility] = useState(false)
+  const [currentClub, setCurrentClub] = useState('')
   
   const selectedStudent = students.find(student => student.id === selectedStudentId)
 
@@ -47,11 +48,12 @@ export default function TabOneScreen() {
     setProfileVisibility(false)
   }
 
-  useEffect(() => {
+  useMemo(() => {
     if(user) {
       const loadMembers = async () => {
         const data = await appwriteService.getMembersByClub((await appwriteService.getMemberByUserId(user.$id)).club)
         setStudents(data)
+        setCurrentClub((await appwriteService.getMemberByUserId(user.$id)).club)
       }
       
       loadMembers()
@@ -106,7 +108,7 @@ export default function TabOneScreen() {
   return (
     
     <View style={styles.container}>
-      <Text style={styles.title}>Directory</Text>
+      <Text style={styles.title}>{currentClub} Directory</Text>
 
       {!user && <View style={{marginHorizontal: 20}}>
         <Text style={{fontSize: 18, textAlign: 'center', marginVertical: 15}}>
