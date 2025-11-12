@@ -222,8 +222,7 @@ const styles = StyleSheet.create({
     paddingBottom: 32
   },
   container: {
-    flex: 1,
-    paddingHorizontal: 24,
+    flex: 1
   },
   title: {
     fontSize: 28,
