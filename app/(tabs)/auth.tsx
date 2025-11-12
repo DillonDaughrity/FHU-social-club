@@ -9,13 +9,36 @@ import {
   View,
 } from "react-native";
 
+import RNPickerSelect from 'react-native-picker-select';
+
+const clubs = [
+  { label: 'Phi Kappa Alpha', value: 'Phi Kappa Alpha' },
+  { label: 'Omega Chi', value: 'Omega Chi' },
+  { label: 'Chi Beta Chi', value: 'Chi Beta Chi' },
+  { label: 'Sigma Rho', value: 'Sigma Rho' },
+  { label: 'Xi Chi Delta', value: 'Xi Chi Delta' },
+];
+
 export default function AuthScreen() {
-  const { user, loading, login, register, logout } = useAuth();
+  const {
+    user,
+    member,
+    loading,
+    login,
+    register,
+    logout,
+    updateMember,
+    refresh,
+  } = useAuth();
 
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [name, setName] = useState(""); // only used in register
-  const [club, setClub] = useState('') // only used in register
+  const [club, setClub] = useState<"Phi Kappa Alpha"
+    | "Omega Chi"
+    | "Chi Beta Chi"
+    | "Sigma Rho"
+    | "Xi Chi Delta">() // only used in register
   const [phone, setPhone] = useState('') // only used in register
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -28,7 +51,7 @@ export default function AuthScreen() {
       if (mode === "login") {
         await login(email.trim(), password);
       } else {
-        await register(email.trim(), password, name.trim());
+        await register(email.trim(), password, name.trim(), phone.trim(), club ?? 'Chi Beta Chi');
       }
     } catch (err: any) {
       // Appwrite throws rich errors (code, message, etc.)
@@ -57,6 +80,10 @@ export default function AuthScreen() {
         <Text style={styles.value}>{user.name}</Text>
         <Text style={styles.label}>Email</Text>
         <Text style={styles.value}>{user.email}</Text>
+        <Text style={styles.label}>Phone</Text>
+        <Text style={styles.value}>{member?.phone}</Text>
+        <Text style={styles.label}>Club</Text>
+        <Text style={styles.value}>{member?.club}</Text>
 
         <TouchableOpacity
           style={[styles.button, styles.logoutButton]}
@@ -88,13 +115,13 @@ export default function AuthScreen() {
           />
 
           <Text style={styles.label}>Club</Text>
-          <TextInput
-            style={styles.input}
-            autoCapitalize='words'
-            value={club}
-            onChangeText={setClub}
-            placeholder="Chi Beta Chi/Xi Chi Delta/Omega Chi/etc."
-          />
+          <View style={styles.input}>
+            <RNPickerSelect
+              onValueChange={setClub}
+              items={clubs}
+              placeholder={{ label: 'Select a club...', value: null }}
+            />
+          </View>
 
           <Text style={styles.label}>Phone</Text>
           <TextInput
