@@ -2,11 +2,14 @@ import { useAuth } from '@/hooks/AuthContext';
 import { useState } from "react";
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 import { Dropdown } from 'react-native-element-dropdown';
@@ -99,101 +102,110 @@ export default function AuthScreen() {
 
   // if logged OUT, show login/register form
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
-        {mode === "login" ? "Login" : "Create Account"}
-      </Text>
-
-      {mode === "register" && (
-        <>
-          <Text style={styles.label}>Name</Text>
-          <TextInput
-            style={styles.input}
-            autoCapitalize="words"
-            value={name}
-            onChangeText={setName}
-            placeholder="Jane Doe"
-          />
-
-          <Text style={styles.label}>Club</Text>
-          <View style={styles.input}>
-            <Dropdown
-                data={clubs}
-                maxHeight={300}
-                labelField="label"
-                valueField="value"
-                placeholder={!isFocus ? 'Select a club...' : '...'}
-                value={club}
-                onFocus={() => setIsFocus(true)}
-                onBlur={() => setIsFocus(false)}
-                onChange={item => {
-                  setClub(item.value);
-                  setIsFocus(false);
-                }}
-              />
-          </View>
-
-          <Text style={styles.label}>Phone</Text>
-          <TextInput
-            style={styles.input}
-            autoCapitalize="words"
-            value={phone}
-            onChangeText={setPhone}
-            placeholder="123-456-7890"
-          />
-        </>
-
-        
-      )}
-
-      <Text style={styles.label}>Email</Text>
-      <TextInput
-        style={styles.input}
-        autoCapitalize="none"
-        autoComplete="email"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-        placeholder="you@example.com"
-      />
-
-      <Text style={styles.label}>Password</Text>
-      <TextInput
-        style={styles.input}
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        placeholder="••••••••"
-      />
-
-      {error && <Text style={styles.errorText}>{error}</Text>}
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleSubmit}
-        disabled={submitting}
+    <KeyboardAvoidingView 
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
       >
-        {submitting ? (
-          <ActivityIndicator />
-        ) : (
-          <Text style={styles.buttonText}>
-            {mode === "login" ? "Sign In" : "Sign Up"}
-          </Text>
-        )}
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={() =>
-          setMode((m) => (m === "login" ? "register" : "login"))
-        }
-      >
-        <Text style={styles.linkText}>
-          {mode === "login"
-            ? "Need an account? Sign up"
-            : "Already have an account? Sign in"}
+        <Text style={styles.title}>
+          {mode === "login" ? "Login" : "Create Account"}
         </Text>
-      </TouchableOpacity>
-    </View>
+
+        {mode === "register" && (
+          <>
+            <Text style={styles.label}>Name</Text>
+            <TextInput
+              style={styles.input}
+              autoCapitalize="words"
+              value={name}
+              onChangeText={setName}
+              placeholder="Jane Doe"
+            />
+
+            <Text style={styles.label}>Club</Text>
+            <View style={styles.input}>
+              <Dropdown
+                  data={clubs}
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder={!isFocus ? 'Select a club...' : '...'}
+                  value={club}
+                  onFocus={() => setIsFocus(true)}
+                  onBlur={() => setIsFocus(false)}
+                  onChange={item => {
+                    setClub(item.value);
+                    setIsFocus(false);
+                  }}
+                />
+            </View>
+
+            <Text style={styles.label}>Phone</Text>
+            <TextInput
+              style={styles.input}
+              autoCapitalize="words"
+              value={phone}
+              onChangeText={setPhone}
+              placeholder="123-456-7890"
+            />
+          </>
+
+          
+        )}
+
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={styles.input}
+          autoCapitalize="none"
+          autoComplete="email"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
+          placeholder="you@example.com"
+        />
+
+        <Text style={styles.label}>Password</Text>
+        <TextInput
+          style={styles.input}
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+          placeholder="••••••••"
+        />
+
+        {error && <Text style={styles.errorText}>{error}</Text>}
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleSubmit}
+          disabled={submitting}
+        >
+          {submitting ? (
+            <ActivityIndicator />
+          ) : (
+            <Text style={styles.buttonText}>
+              {mode === "login" ? "Sign In" : "Sign Up"}
+            </Text>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() =>
+            setMode((m) => (m === "login" ? "register" : "login"))
+          }
+        >
+          <Text style={styles.linkText}>
+            {mode === "login"
+              ? "Need an account? Sign up"
+              : "Already have an account? Sign in"}
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -204,9 +216,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
+  scrollContent: {
+    paddingTop: 96,
+    paddingHorizontal: 24,
+    paddingBottom: 32
+  },
   container: {
     flex: 1,
-    paddingTop: 96,
     paddingHorizontal: 24,
   },
   title: {
