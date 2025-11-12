@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 
-import RNPickerSelect from 'react-native-picker-select';
+import { Dropdown } from 'react-native-element-dropdown';
 
 const clubs = [
   { label: 'Phi Kappa Alpha', value: 'Phi Kappa Alpha' },
@@ -43,6 +43,7 @@ export default function AuthScreen() {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isFocus, setIsFocus] = useState(false);
 
   async function handleSubmit() {
     setSubmitting(true);
@@ -116,11 +117,20 @@ export default function AuthScreen() {
 
           <Text style={styles.label}>Club</Text>
           <View style={styles.input}>
-            <RNPickerSelect
-              onValueChange={setClub}
-              items={clubs}
-              placeholder={{ label: 'Select a club...', value: null }}
-            />
+            <Dropdown
+                data={clubs}
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder={!isFocus ? 'Select a club...' : '...'}
+                value={club}
+                onFocus={() => setIsFocus(true)}
+                onBlur={() => setIsFocus(false)}
+                onChange={item => {
+                  setClub(item.value);
+                  setIsFocus(false);
+                }}
+              />
           </View>
 
           <Text style={styles.label}>Phone</Text>

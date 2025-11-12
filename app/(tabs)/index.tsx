@@ -41,7 +41,8 @@ export default function TabTwoScreen() {
     return(
       <View style={styles.eventContainer}>
         <View style={styles.eventInfo}>
-          <Text style={{fontSize: 20, marginBottom: 5}}>{item.title}</Text>
+          <Text style={{fontSize: 20}}>{item.title}</Text>
+          <Text style={{fontSize: 17, marginTop: 5, marginBottom: 10}}>{item.location}</Text>
           <Text style={{fontSize: 15}}>{item.club}</Text>
         </View>
         <Text style={styles.eventDescription}>{item.description}</Text>
